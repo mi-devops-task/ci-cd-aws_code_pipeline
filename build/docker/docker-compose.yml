@@ -38,6 +38,7 @@ services:
     container_name: event-receiver
     hostname: event-receiver
     environment:
+      AWS_LAMBDA_FUNCTION_NAME: event-receiver
       LOG_LEVEL: DEBUG
       POWERTOOLS_SERVICE_NAME: $TEAM_ID
       PROFILE: $PROFILE
@@ -48,9 +49,7 @@ services:
         target: /tmp
     ports:
       - 9000:8080
-    # depends_on:
-    #   mock-dos:
-    #     condition: service_healthy
+
 
   event-sender:
     image: $DOCKER_REGISTRY/event-sender:latest
@@ -77,6 +76,7 @@ services:
     container_name: event-processor
     hostname: event-processor
     environment:
+      AWS_LAMBDA_FUNCTION_NAME: event-processor
       LOG_LEVEL: DEBUG
       POWERTOOLS_SERVICE_NAME: $TEAM_ID
       PROFILE: $PROFILE
@@ -96,6 +96,9 @@ services:
         target: /tmp
     ports:
       - 9001:8080
+    depends_on:
+      mock-dos:
+        condition: service_healthy
 
   mock-dos:
     image: postgres:latest
